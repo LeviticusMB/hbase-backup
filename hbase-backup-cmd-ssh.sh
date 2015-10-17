@@ -1,14 +1,16 @@
 #!/bin/bash
 
-GPG="gpg -e -r me@example.com"
+# To use this script:
+# hbase-backup-table.rb --db-table <tablename> /path/to/hbase-backup-cmd-ssh.sh user@remote.host /hdfs-nfs-mount-point
 
-if [ $# -ne 3 ]; then
-    echo "Usage: $0 <HDFS mount point> <HDFS backup path> <HDFS backup folder>"
+if [ $# -ne 4 ]; then
+    echo "Usage: $0 <Remote SSH host> <HDFS mount point> <HDFS backup path> <HDFS backup folder>"
     exit 10
 fi
 
-root="$1"
-path="$2"
-name="$3"
+host="$1"
+root="$2"
+path="$3"
+name="$4"
 
-tar -cvz -f - -C "${root}/${path}" "${name}" | ${GPG} | ssh me@example.com "dd of='hbase-${name}@${HOSTNAME}.tar.gz.pgp'"
+tar -cvz -f - -C "${root}/${path}" "${name}" | ssh "${host}" "dd of='hbase-${name}@${HOSTNAME}.tar.gz'"
